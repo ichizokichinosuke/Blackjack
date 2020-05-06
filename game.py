@@ -86,5 +86,5 @@ while(True):
     game_again = input()
     if game_again == "y" or game_again == "Y":
        continue
-    else:
+    else:a
         break
