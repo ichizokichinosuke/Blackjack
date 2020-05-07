@@ -45,7 +45,7 @@ def disp_result(dealer, player):
 
     print(f"Winner is {who_win}!!")
 
-def run()
+def run():
     while(True):
         print("Game Start...")
         dealer = 0
@@ -86,7 +86,7 @@ def run()
         print("Please enter Yes: y or No: n.")
         game_again = input()
         if game_again == "y" or game_again == "Y":
-        continue
+            continue
         else:
             break
 
