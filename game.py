@@ -1,94 +1,105 @@
 import random
+import threading
+import time
 
-def new_card(who=None):
-    new_c = random.randint(1, 13)
-    # print(who)
-    if who == "d":
-        print(f"Dealer's new number is {new_c}.")
 
-    elif who == "p":
-        print(f"Player's new number is {new_c}.")
+class game(threading.Thread):
+    def __init__(self):
+        threading.Thread.__init__(self)
+        self.choice = ""
 
-    if new_c > 10:
-        new_c = 10
+    def new_card(self, who=None):
+        new_c = random.randint(1, 13)
+        # print(who)
+        if who == "d":
+            print(f"Dealer's new number is {new_c}.")
 
-    return new_c
+        elif who == "p":
+            print(f"Player's new number is {new_c}.")
 
-def choice_action():
-    print("Stand?: s or Hit?: h")
-    print("Please enter s or h.")
+        if new_c > 10:
+            new_c = 10
 
-    choice = input()
+        return new_c
 
-    return choice
+    def choice_action(self, choice=None):
+        print("Stand?: s or Hit?: h")
+        print("Please enter s or h.")
 
-def check_num(dealer, player):
-    if dealer > 21:
-        print("Player win!")
-        return False
-    elif player > 21:
-        print("Player lose!")
-        return False
+        choice = input()
 
-    if dealer == 21:
-        print("Player lose!")
-        return False
-    elif player == 21:
-        print("Player win!")
-        return False
+        return choice
 
-    return True
+    def wait_button(self, ):
+        print("*"*20)
 
-def disp_result(dealer, player):
-    assert dealer <= 21 and player <= 21, "We could'nt check number."
-    who_win = "Dealer" if dealer >= player else "Player"
+    def check_num(self, dealer, player):
+        if dealer > 21:
+            print("Player win!")
+            return False
+        elif player > 21:
+            print("Player lose!")
+            return False
 
-    print(f"Winner is {who_win}!!")
+        if dealer == 21:
+            print("Player lose!")
+            return False
+        elif player == 21:
+            print("Player win!")
+            return False
 
-def run():
-    while(True):
-        print("Game Start...")
-        dealer = 0
-        player = 0
-        try_first = True
+        return True
+
+    def disp_result(self, dealer, player):
+        assert dealer <= 21 and player <= 21, "We could'nt check number."
+        who_win = "Dealer" if dealer >= player else "Player"
+
+        print(f"Winner is {who_win}!!")
+
+    def run(self):
         while(True):
-            if dealer < 17:
-                dealer += new_card(who="d")
-            player += new_card(who="p")
-            if try_first:
-                try_first = False
+            print("Game Start...")
+            dealer = 0
+            player = 0
+            try_first = True
+            while(True):
+                if dealer < 17:
+                    dealer += self.new_card(who="d")
+                player += self.new_card(who="p")
+                if try_first:
+                    try_first = False
+                    continue
+
+                print(f"Dealer's total number is {dealer}.")
+                print(f"Player's total number is {player}.")
+
+                is_continue = self.check_num(dealer, player)
+
+                if not is_continue:
+                    break
+
+                self.choice = self.choice_action()
+
+                while(not(self.choice == "s" or self.choice == "h")):
+                    self.choice = self.choice_action()
+
+                if self.choice == "s":
+                    while(dealer < 17):
+                        dealer += self.new_card(who="d")
+                        print(f"Dealer's total number is {dealer}.")
+
+                    disp_result(dealer, player)
+                    break
+                elif self.choice == "h":
+                    continue
+
+            print("Play again?")
+            print("Please enter Yes: y or No: n.")
+            game_again = input()
+            if game_again == "y" or game_again == "Y":
                 continue
-
-            print(f"Dealer's total number is {dealer}.")
-            print(f"Player's total number is {player}.")
-
-            is_continue = check_num(dealer, player)
-
-            if not is_continue:
+            else:
                 break
-
-            choice = choice_action()
-
-            while(not(choice == "s" or choice == "h")):
-                choice = choice_action()
-
-            if choice == "s":
-                while(dealer < 17):
-                    dealer += new_card(who="d")
-                    print(f"Dealer's total number is {dealer}.")
-
-                disp_result(dealer, player)
-                break
-            elif choice == "h":
-                continue
-
-        print("Play again?")
-        print("Please enter Yes: y or No: n.")
-        game_again = input()
-        if game_again == "y" or game_again == "Y":
-            continue
-        else:
-            break
 
 def main():
     run()
