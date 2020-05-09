@@ -27,17 +27,8 @@ class game(threading.Thread):
     def choice_action(self):
         print("Stand?: s or Hit?: h")
         print("Please enter s or h.")
-        # self.choice = ""
-        # while (not(self.choice == "h" or self.choice == "s")):
-            # pass
-            # print("Wait")
-            # time.sleep(10)
-        print("Wait")
+        print("Waiting click...")
         event.wait()
-
-        # choice = input()
-
-        # return choice
 
     def wait_button(self, ):
         print("*"*20)
@@ -60,7 +51,6 @@ class game(threading.Thread):
         return True
 
     def disp_result(self, dealer, player):
-        # assert dealer <= 21 and player <= 21, "We could'nt check number."
         if self.check_num(dealer, player):
             who_win = "Dealer" if dealer >= player else "Player"
 
@@ -92,10 +82,6 @@ class game(threading.Thread):
                 if not is_continue:
                     break
 
-                # self.choice = self.choice_action()
-
-                # while(not(self.choice == "s" or self.choice == "h")):
-                #     self.choice = self.choice_action()
                 self.choice_action()
 
                 if self.choice == "s":
@@ -117,31 +103,19 @@ class game(threading.Thread):
             else:
                 break
 
-
 def game_start():
-    # th = threading.Thread(target=game_class.run())
     th.start()
-    game_class.run()
-    # start_bt.state(["disabled"])
 
 def choose_hit():
-    # pass
     th.choice = "h"
     event.set()
     event.clear()
 
-    # print("\n")
-
 def choose_stand():
-    # pass
     th.choice = "s"
     event.set()
     event.clear()
-    # game.choice_action("s")
-    # print("\n")
 
-
-# game_class = game()
 th = game()
 
 root = tk.Tk()
@@ -149,7 +123,6 @@ root.title("Blackjack")
 root.geometry("650x500+500+10")
 
 start_bt = ttk.Button(text="START", width=35, command=game_start)
-# start_bt.bind("<Button-1>", game_start)
 start_bt.pack(anchor=tk.SW, side=tk.LEFT)
 
 hit_bt = ttk.Button(text="HIT", width=35, command=choose_hit)
