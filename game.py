@@ -26,12 +26,15 @@ class game(threading.Thread):
     def choice_action(self):
         print("Stand?: s or Hit?: h")
         print("Please enter s or h.")
+        self.choice = ""
+        while (not(self.choice == "h" or self.choice == "s")):
+            # pass
+            # print("Wait")
+            time.sleep(10)
 
-        # event.wait()
+        # choice = input()
 
-        choice = input()
-
-        return choice
+        # return choice
 
     def wait_button(self, ):
         print("*"*20)
@@ -88,8 +91,9 @@ class game(threading.Thread):
 
                 # self.choice = self.choice_action()
 
-                while(not(self.choice == "s" or self.choice == "h")):
-                    self.choice = self.choice_action()
+                # while(not(self.choice == "s" or self.choice == "h")):
+                #     self.choice = self.choice_action()
+                self.choice_action()
 
                 if self.choice == "s":
                     while(dealer < 17):
