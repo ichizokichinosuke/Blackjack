@@ -1,7 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
 import threading, random
-# import game
 
 event = threading.Event()
 
@@ -9,15 +8,28 @@ class game(threading.Thread):
     def __init__(self):
         threading.Thread.__init__(self)
         self.choice = ""
+        self.tramp_kind = {1:"spade", 2: "clover", 3: "diamond", 4: "heart"}
 
     def new_card(self, who=None):
         new_c = random.randint(1, 13)
+        kind = self.tramp_kind[random.randint(1,4)]
+        tramp_image = tk.PhotoImage(file=f"../Tramp/{kind}_{new_c}.png")
+        # print(kind, new_c)
+        canvas = tk.Canvas(bg="green", width=300, height=400)
+        # print(tramp_image)
+
         # print(who)
         if who == "d":
             print(f"Dealer's new number is {new_c}.")
-
+            x = 300
+            y = 20
         elif who == "p":
             print(f"Player's new number is {new_c}.")
+            x = 300
+            y = 480
+
+        canvas.place(x=x, y=y)
+        canvas.create_image(x, y, image=tramp_image)
 
         if new_c > 10:
             new_c = 10
@@ -116,6 +128,10 @@ def choose_stand():
     event.set()
     event.clear()
 
+
+"""
+Main part
+"""
 th = game()
 
 root = tk.Tk()
