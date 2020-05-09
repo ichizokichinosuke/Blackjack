@@ -2,6 +2,7 @@ import random
 import threading
 import time
 
+# event = threading.Event()
 
 class game(threading.Thread):
     def __init__(self):
@@ -22,9 +23,11 @@ class game(threading.Thread):
 
         return new_c
 
-    def choice_action(self, choice=None):
+    def choice_action(self):
         print("Stand?: s or Hit?: h")
         print("Please enter s or h.")
+
+        # event.wait()
 
         choice = input()
 
@@ -51,10 +54,15 @@ class game(threading.Thread):
         return True
 
     def disp_result(self, dealer, player):
-        assert dealer <= 21 and player <= 21, "We could'nt check number."
-        who_win = "Dealer" if dealer >= player else "Player"
+        # assert dealer <= 21 and player <= 21, "We could'nt check number."
+        if self.check_num(dealer, player):
+            who_win = "Dealer" if dealer >= player else "Player"
 
-        print(f"Winner is {who_win}!!")
+            print(f"Dealer's total number is {dealer}.")
+            print(f"Player's total number is {player}.")
+            print("*"*20)
+            print(f"Winner is {who_win}!!")
+            print("*"*20)
 
     def run(self):
         while(True):
@@ -78,7 +86,7 @@ class game(threading.Thread):
                 if not is_continue:
                     break
 
-                self.choice = self.choice_action()
+                # self.choice = self.choice_action()
 
                 while(not(self.choice == "s" or self.choice == "h")):
                     self.choice = self.choice_action()
@@ -88,7 +96,7 @@ class game(threading.Thread):
                         dealer += self.new_card(who="d")
                         print(f"Dealer's total number is {dealer}.")
 
-                    disp_result(dealer, player)
+                    self.disp_result(dealer, player)
                     break
                 elif self.choice == "h":
                     continue
@@ -97,12 +105,14 @@ class game(threading.Thread):
             print("Please enter Yes: y or No: n.")
             game_again = input()
             if game_again == "y" or game_again == "Y":
+                self.choice = ""
                 continue
             else:
                 break
 
 def main():
-    run()
+    game_class = game()
+    game_class.run()
 
 if __name__ == "__main__":
     main()
