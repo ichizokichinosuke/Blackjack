@@ -21,13 +21,11 @@ class game(threading.Thread):
     def new_card(self, who=None):
         new_c = random.randint(1, 13)
         kind = self.tramp_kind[random.randint(1,4)]
-        self.field_canvas = tk.Canvas(root, bg="green", width=TRAMP_WIDTH-PAD, height=TRAMP_HEIGHT-PAD)
+        self.field_canvas = tk.Canvas(root, bg="green", width=TRAMP_WIDTH-PAD, height=TRAMP_HEIGHT-PAD, highlightthickness=0)
 
         tramp_image = Image.open(f"../Tramp/{kind}_{new_c}.png")
         tramp_image = image_resize(TRAMP_WIDTH, tramp_image)
         tramp_tk = ImageTk.PhotoImage(tramp_image)
-
-
 
         x = 200
         if who == "d":
@@ -42,8 +40,9 @@ class game(threading.Thread):
             self.player_imgs.append(tramp_tk)
             x += len(self.player_imgs)*TRAMP_WIDTH/2
 
+
+        self.field_canvas.create_image((TRAMP_WIDTH-PAD)/2, (TRAMP_HEIGHT-PAD)/2, image=tramp_tk)
         self.field_canvas.place(x=x, y=y)
-        self.field_canvas.create_image(0, 0, image=tramp_tk, anchor=tk.NW)
 
         if new_c > 10:
             new_c = 10
@@ -55,9 +54,6 @@ class game(threading.Thread):
         print("Please enter s or h.")
         print("Waiting click...")
         self.operation_event.wait()
-
-    def wait_button(self, ):
-        print("*"*20)
 
     def check_num(self, dealer, player):
         if dealer > 21:
@@ -166,7 +162,7 @@ def image_resize(width, img):
 Const values
 """
 TRAMP_WIDTH = 140
-PAD = 5
+PAD = 3
 BACK_X = 800
 BACK_Y = 5
 
@@ -194,12 +190,11 @@ next_game_bt.pack(anchor=tk.SW, side=tk.LEFT)
 tramp_back = Image.open("../Tramp/others_2.png")
 tramp_back = image_resize(TRAMP_WIDTH, tramp_back)
 TRAMP_HEIGHT = tramp_back.size[1]
-back_canvas = tk.Canvas(root, bg="green", width=TRAMP_WIDTH-PAD, height=TRAMP_HEIGHT-PAD)
+back_canvas = tk.Canvas(root, bg="green", width=TRAMP_WIDTH-PAD, height=TRAMP_HEIGHT-PAD, highlightthickness=0)
 tkimg = ImageTk.PhotoImage(tramp_back)
 
 back_canvas.place(x=BACK_X, y=BACK_Y)
-back_canvas.create_image(0, 0, image=tkimg, anchor=tk.NW)
-
+back_canvas.create_image((TRAMP_WIDTH-PAD)/2,(TRAMP_HEIGHT-PAD)/2,  image=tkimg)
 
 root.configure(bg="green")
 root.mainloop()
