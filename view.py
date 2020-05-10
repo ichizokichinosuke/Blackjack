@@ -3,7 +3,6 @@ from tkinter import ttk
 import threading, random
 from PIL import Image, ImageTk
 
-event = threading.Event()
 
 class game(threading.Thread):
     def __init__(self):
@@ -14,6 +13,10 @@ class game(threading.Thread):
         self.player_imgs = []
         self.daemon = True
         self.alive = True
+        self.game_start_event = threading.Event()
+        self.operation_event = threading.Event()
+        self.next_game_event = threading.Event()
+
 
     def new_card(self, who=None):
         new_c = random.randint(1, 13)
@@ -51,7 +54,7 @@ class game(threading.Thread):
         print("Stand?: s or Hit?: h")
         print("Please enter s or h.")
         print("Waiting click...")
-        event.wait()
+        self.operation_event.wait()
 
     def wait_button(self, ):
         print("*"*20)
@@ -86,7 +89,7 @@ class game(threading.Thread):
     def run(self):
         while True:
             print("Game Start...")
-            event.wait()
+            self.game_start_event.wait()
             dealer = 0
             player = 0
             try_first = True
@@ -120,30 +123,40 @@ class game(threading.Thread):
 
             print("Play again?")
             print("Please enter Yes: y or No: n.")
-            event.wait()
+            switchButtonStateToDisabled()
 
 def game_start():
-    event.set()
-    event.clear()
+    game_thread.game_start_event.set()
+    game_thread.game_start_event.clear()
+    start_bt.config(state=tk.DISABLED)
 
 def choose_hit():
     game_thread.choice = "h"
-    event.set()
-    event.clear()
+    game_thread.operation_event.set()
+    game_thread.operation_event.clear()
 
 def choose_stand():
     game_thread.choice = "s"
-    event.set()
-    event.clear()
+    game_thread.operation_event.set()
+    game_thread.operation_event.clear()
 
 def next_game():
     game_thread.dealer_imgs = []
     game_thread.player_imgs = []
     game_thread.field_canvas.delete("all")
-    event.set()
-    event.clear()
+    game_thread.game_start_event.set()
+    game_thread.game_start_event.clear()
+    switchButtonStateToAbled()
 
+def switchButtonStateToAbled():
+    hit_bt.config(state=tk.NORMAL)
+    stand_bt.config(state=tk.NORMAL)
+    next_game_bt.config(state=tk.DISABLED)
 
+def switchButtonStateToDisabled():
+    hit_bt.config(state=tk.DISABLED)
+    stand_bt.config(state=tk.DISABLED)
+    next_game_bt.config(state=tk.NORMAL)
 
 def image_resize(width, img):
     resized_image = img.resize((width, int(width*img.size[1]/img.size[0])))
@@ -175,7 +188,7 @@ hit_bt.pack(anchor=tk.SW, side=tk.LEFT)
 stand_bt = ttk.Button(text="STAND", width=35, command=choose_stand)
 stand_bt.pack(anchor=tk.SW, side=tk.LEFT)
 
-next_game_bt = ttk.Button(text="Next Game", width=35, command=next_game)
+next_game_bt = ttk.Button(text="Next Game", width=35, command=next_game, state=tk.DISABLED)
 next_game_bt.pack(anchor=tk.SW, side=tk.LEFT)
 
 tramp_back = Image.open("../Tramp/others_2.png")
