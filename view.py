@@ -12,25 +12,21 @@ class game(threading.Thread):
         self.tramp_kind = {1:"spade", 2: "clover", 3: "diamond", 4: "heart"}
         self.dealer_imgs = []
         self.player_imgs = []
+        self.daemon = True
+        self.alive = True
 
     def new_card(self, who=None):
         new_c = random.randint(1, 13)
         kind = self.tramp_kind[random.randint(1,4)]
+        self.field_canvas = tk.Canvas(root, bg="green", width=TRAMP_WIDTH-PAD, height=TRAMP_HEIGHT-PAD)
 
         tramp_image = Image.open(f"../Tramp/{kind}_{new_c}.png")
         tramp_image = image_resize(TRAMP_WIDTH, tramp_image)
-        # print(tramp_image)
         tramp_tk = ImageTk.PhotoImage(tramp_image)
-        # print(TRAMP_WIDTH, TRAMP_HEIGHT)
-        # print(tramp_image.size)
 
-        # print(kind, new_c)
-        field_canvas = tk.Canvas(root, bg="green", width=TRAMP_WIDTH-PAD, height=TRAMP_HEIGHT-PAD)
 
-        # print(tramp_image)
+
         x = 200
-
-        # print(who)
         if who == "d":
             print(f"Dealer's new number is {new_c}.")
             y = 5
@@ -43,8 +39,8 @@ class game(threading.Thread):
             self.player_imgs.append(tramp_tk)
             x += len(self.player_imgs)*TRAMP_WIDTH/2
 
-        field_canvas.place(x=x, y=y)
-        field_canvas.create_image(0, 0, image=tramp_tk, anchor=tk.NW)
+        self.field_canvas.place(x=x, y=y)
+        self.field_canvas.create_image(0, 0, image=tramp_tk, anchor=tk.NW)
 
         if new_c > 10:
             new_c = 10
@@ -88,8 +84,9 @@ class game(threading.Thread):
             print("*"*20)
 
     def run(self):
-        while(True):
+        while True:
             print("Game Start...")
+            event.wait()
             dealer = 0
             player = 0
             try_first = True
@@ -123,25 +120,30 @@ class game(threading.Thread):
 
             print("Play again?")
             print("Please enter Yes: y or No: n.")
-            game_again = input()
-            if game_again == "y" or game_again == "Y":
-                self.choice = ""
-                continue
-            else:
-                break
+            event.wait()
 
 def game_start():
-    th.start()
+    event.set()
+    event.clear()
 
 def choose_hit():
-    th.choice = "h"
+    game_thread.choice = "h"
     event.set()
     event.clear()
 
 def choose_stand():
-    th.choice = "s"
+    game_thread.choice = "s"
     event.set()
     event.clear()
+
+def next_game():
+    game_thread.dealer_imgs = []
+    game_thread.player_imgs = []
+    game_thread.field_canvas.delete("all")
+    event.set()
+    event.clear()
+
+
 
 def image_resize(width, img):
     resized_image = img.resize((width, int(width*img.size[1]/img.size[0])))
@@ -158,11 +160,12 @@ BACK_Y = 5
 """
 Main part
 """
-th = game()
-
 root = tk.Tk()
 root.title("Blackjack")
 root.geometry("1000x700+500+10")
+
+game_thread = game()
+game_thread.start()
 
 start_bt = ttk.Button(text="START", width=35, command=game_start)
 start_bt.pack(anchor=tk.SW, side=tk.LEFT)
@@ -171,6 +174,9 @@ hit_bt = ttk.Button(text="HIT", width=35, command=choose_hit)
 hit_bt.pack(anchor=tk.SW, side=tk.LEFT)
 stand_bt = ttk.Button(text="STAND", width=35, command=choose_stand)
 stand_bt.pack(anchor=tk.SW, side=tk.LEFT)
+
+next_game_bt = ttk.Button(text="Next Game", width=35, command=next_game)
+next_game_bt.pack(anchor=tk.SW, side=tk.LEFT)
 
 tramp_back = Image.open("../Tramp/others_2.png")
 tramp_back = image_resize(TRAMP_WIDTH, tramp_back)
