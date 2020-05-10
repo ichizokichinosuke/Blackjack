@@ -16,6 +16,7 @@ class game(threading.Thread):
         self.game_start_event = threading.Event()
         self.operation_event = threading.Event()
         self.next_game_event = threading.Event()
+        # self.number_font = tk.font.Font(family="Times", size=40)
 
 
     def new_card(self, who=None):
@@ -73,14 +74,18 @@ class game(threading.Thread):
         return True
 
     def disp_result(self, dealer, player):
+        self.disp_total(dealer, player)
         if self.check_num(dealer, player):
             who_win = "Dealer" if dealer >= player else "Player"
 
-            print(f"Dealer's total number is {dealer}.")
-            print(f"Player's total number is {player}.")
-            print("*"*20)
-            print(f"Winner is {who_win}!!")
-            print("*"*20)
+    def disp_total(self, dealer, player):
+        dealer_label = tk.Label(root, text=dealer, font=("Times", 40), fg="white", bg="black")
+        player_label = tk.Label(root, text=player, font=("Times", 40), fg="white", bg="black")
+        x = 150
+        dealer_y = 5 + TRAMP_HEIGHT/2
+        player_y = 400 + TRAMP_HEIGHT/2
+        dealer_label.place(x=x, y=dealer_y)
+        player_label.place(x=x, y=player_y)
 
     def run(self):
         while True:
@@ -97,9 +102,7 @@ class game(threading.Thread):
                     try_first = False
                     continue
 
-                print(f"Dealer's total number is {dealer}.")
-                print(f"Player's total number is {player}.")
-
+                self.disp_total(dealer, player)
                 is_continue = self.check_num(dealer, player)
 
                 if not is_continue:
