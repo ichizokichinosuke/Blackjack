@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 import threading, random
+from PIL import Image, ImageTk
 
 event = threading.Event()
 
@@ -15,7 +16,7 @@ class game(threading.Thread):
         kind = self.tramp_kind[random.randint(1,4)]
         tramp_image = tk.PhotoImage(file=f"../Tramp/{kind}_{new_c}.png")
         # print(kind, new_c)
-        canvas = tk.Canvas(bg="green", width=300, height=400)
+        # canvas = tk.Canvas(bg="green", width=300, height=400)
         # print(tramp_image)
 
         # print(who)
@@ -28,8 +29,8 @@ class game(threading.Thread):
             x = 300
             y = 480
 
-        canvas.place(x=x, y=y)
-        canvas.create_image(x, y, image=tramp_image)
+        # canvas.place(x=x, y=y)
+        # canvas.create_image(x, y, image=tramp_image)
 
         if new_c > 10:
             new_c = 10
@@ -128,6 +129,17 @@ def choose_stand():
     event.set()
     event.clear()
 
+def image_resize(width, img):
+    resized_image = img.resize((width, int(width*img.size[1]/img.size[0])))
+    return resized_image
+
+"""
+Const values
+"""
+TRAMP_WIDTH = 140
+PAD = 3
+BACK_X = 500
+BACK_Y = 20
 
 """
 Main part
@@ -145,6 +157,15 @@ hit_bt = ttk.Button(text="HIT", width=35, command=choose_hit)
 hit_bt.pack(anchor=tk.SW, side=tk.LEFT)
 stand_bt = ttk.Button(text="STAND", width=35, command=choose_stand)
 stand_bt.pack(anchor=tk.SW, side=tk.LEFT)
+
+tramp_back = Image.open("../Tramp/others_2.png")
+tramp_back = image_resize(TRAMP_WIDTH, tramp_back)
+TRAMP_HEIGHT = tramp_back.size[1]
+back_canvas = tk.Canvas(root, bg="green", width=TRAMP_WIDTH-PAD, height=TRAMP_HEIGHT-PAD)
+tkimg = ImageTk.PhotoImage(tramp_back)
+
+back_canvas.place(x=BACK_X, y=BACK_Y)
+back_canvas.create_image(0, 0, image=tkimg, anchor=tk.NW)
 
 
 root.configure(bg="green")
