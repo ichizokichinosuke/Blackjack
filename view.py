@@ -10,27 +10,41 @@ class game(threading.Thread):
         threading.Thread.__init__(self)
         self.choice = ""
         self.tramp_kind = {1:"spade", 2: "clover", 3: "diamond", 4: "heart"}
+        self.dealer_imgs = []
+        self.player_imgs = []
 
     def new_card(self, who=None):
         new_c = random.randint(1, 13)
         kind = self.tramp_kind[random.randint(1,4)]
-        tramp_image = tk.PhotoImage(file=f"../Tramp/{kind}_{new_c}.png")
-        # print(kind, new_c)
-        # canvas = tk.Canvas(bg="green", width=300, height=400)
+
+        tramp_image = Image.open(f"../Tramp/{kind}_{new_c}.png")
+        tramp_image = image_resize(TRAMP_WIDTH, tramp_image)
         # print(tramp_image)
+        tramp_tk = ImageTk.PhotoImage(tramp_image)
+        # print(TRAMP_WIDTH, TRAMP_HEIGHT)
+        # print(tramp_image.size)
+
+        # print(kind, new_c)
+        field_canvas = tk.Canvas(root, bg="green", width=TRAMP_WIDTH-PAD, height=TRAMP_HEIGHT-PAD)
+
+        # print(tramp_image)
+        x = 200
 
         # print(who)
         if who == "d":
             print(f"Dealer's new number is {new_c}.")
-            x = 300
-            y = 20
+            y = 5
+            self.dealer_imgs.append(tramp_tk)
+            x += len(self.dealer_imgs)*TRAMP_WIDTH/2
+
         elif who == "p":
             print(f"Player's new number is {new_c}.")
-            x = 300
-            y = 480
+            y = 400
+            self.player_imgs.append(tramp_tk)
+            x += len(self.player_imgs)*TRAMP_WIDTH/2
 
-        # canvas.place(x=x, y=y)
-        # canvas.create_image(x, y, image=tramp_image)
+        field_canvas.place(x=x, y=y)
+        field_canvas.create_image(0, 0, image=tramp_tk, anchor=tk.NW)
 
         if new_c > 10:
             new_c = 10
@@ -137,9 +151,9 @@ def image_resize(width, img):
 Const values
 """
 TRAMP_WIDTH = 140
-PAD = 3
-BACK_X = 500
-BACK_Y = 20
+PAD = 5
+BACK_X = 800
+BACK_Y = 5
 
 """
 Main part
@@ -148,7 +162,7 @@ th = game()
 
 root = tk.Tk()
 root.title("Blackjack")
-root.geometry("650x500+500+10")
+root.geometry("1000x700+500+10")
 
 start_bt = ttk.Button(text="START", width=35, command=game_start)
 start_bt.pack(anchor=tk.SW, side=tk.LEFT)
