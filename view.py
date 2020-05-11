@@ -16,8 +16,6 @@ class game(threading.Thread):
         self.game_start_event = threading.Event()
         self.operation_event = threading.Event()
         self.next_game_event = threading.Event()
-        # self.number_font = tk.font.Font(family="Times", size=40)
-
 
     def new_card(self, who=None):
         new_c = random.randint(1, 13)
@@ -64,6 +62,7 @@ class game(threading.Thread):
             self.bust_result = tk.Label(root, text="Bust!", font=("Times", 40), fg="white", bg="black")
             bust_y = self.dealer_y + ADD
             self.bust_result.place(x=bust_x, y=bust_y)
+            self.disp_result(dealer, player, stop_flag=True)
 
             return False
         elif player > 21:
@@ -71,19 +70,27 @@ class game(threading.Thread):
             self.bust_result = tk.Label(root, text="Bust!", font=("Times", 40), fg="white", bg="black")
             bust_y = self.player_y + ADD
             self.bust_result.place(x=bust_x, y=bust_y)
+            self.disp_result(dealer, player, stop_flag=True)
 
             return False
 
         if dealer == 21 or player == 21:
-            self.disp_result(dealer, player)
+            self.disp_result(dealer, player, stop_flag=True)
             return False
 
         return True
 
-    def disp_result(self, dealer, player):
+    def disp_result(self, dealer, player, stop_flag=False):
         self.disp_total(dealer, player)
-        # if self.check_num(dealer, player):
-        result = "Lose" if dealer >= player else "Win"
+        if stop_flag:
+            if player == 21:
+                result = "Win"
+            elif dealer == 21:
+                result == "Lose"
+            else:
+                result = "Lose" if player > dealer else "Win"
+        else:
+            result = "Lose" if dealer >= player else "Win"
         self.result_label = tk.Label(root, text=result+"!!", font=("Times", 40), fg="white", bg="black")
         self.result_label.place(x=500, y=230)
 
@@ -97,8 +104,6 @@ class game(threading.Thread):
         player_label.place(x=x, y=self.player_y)
         print(dealer)
         print(player)
-        # dealer_label.pack()
-        # player_label.pack()
 
     def run(self):
         while True:
@@ -133,8 +138,6 @@ class game(threading.Thread):
                 elif self.choice == "h":
                     continue
 
-            print("Play again?")
-            print("Please enter Yes: y or No: n.")
             switchButtonStateToDisabled()
 
 def game_start():
