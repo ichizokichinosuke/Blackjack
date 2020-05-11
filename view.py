@@ -21,6 +21,7 @@ class game(threading.Thread):
 
     def new_card(self, who=None):
         new_c = random.randint(1, 13)
+        # new_c = random.choice([2,1])
         kind = self.tramp_kind[random.randint(1,4)]
         self.field_canvas = tk.Canvas(root, bg="green", width=TRAMP_WIDTH-PAD, height=TRAMP_HEIGHT-PAD, highlightthickness=0)
 
@@ -185,9 +186,14 @@ def next_game():
     game_thread.result_label.place_forget()
     game_thread.bust_result.place_forget()
     game_thread.field_canvas.delete("all")
+
     game_thread.game_start_event.set()
     game_thread.game_start_event.clear()
     switchButtonStateToAbled()
+
+def draw_tramp_back():
+    back_canvas.place(x=BACK_X, y=BACK_Y)
+    back_canvas.create_image((TRAMP_WIDTH-PAD)/2,(TRAMP_HEIGHT-PAD)/2,  image=tkimg)
 
 def draw_blackbox():
     dealer_label = tk.Label(root, text="88", font=("Times", 40), fg="black", bg="black")
@@ -214,8 +220,9 @@ Const values
 """
 TRAMP_WIDTH = 140
 PAD = 3
+DIF = 20
 BACK_X = 800
-BACK_Y = 5
+BACK_Y = 200
 
 """
 Main part
@@ -241,11 +248,12 @@ next_game_bt.pack(anchor=tk.SW, side=tk.LEFT)
 tramp_back = Image.open("../Tramp/others_2.png")
 tramp_back = image_resize(TRAMP_WIDTH, tramp_back)
 TRAMP_HEIGHT = tramp_back.size[1]
-back_canvas = tk.Canvas(root, bg="green", width=TRAMP_WIDTH-PAD, height=TRAMP_HEIGHT-PAD, highlightthickness=0)
 tkimg = ImageTk.PhotoImage(tramp_back)
 
-back_canvas.place(x=BACK_X, y=BACK_Y)
-back_canvas.create_image((TRAMP_WIDTH-PAD)/2,(TRAMP_HEIGHT-PAD)/2,  image=tkimg)
+for i in range(3):
+    back_canvas = tk.Canvas(root, bg="green", width=TRAMP_WIDTH-PAD, height=TRAMP_HEIGHT-PAD, highlightthickness=0)
+    back_canvas.place(x=BACK_X-i*DIF, y=BACK_Y+i*DIF)
+    back_canvas.create_image((TRAMP_WIDTH-PAD)/2,(TRAMP_HEIGHT-PAD)/2,  image=tkimg)
 
 root.configure(bg="green")
 root.mainloop()
