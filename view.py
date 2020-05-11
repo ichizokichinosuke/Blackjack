@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
-import threading, random
+import threading, random, time
 from PIL import Image, ImageTk
 
 
@@ -33,6 +33,7 @@ class game(threading.Thread):
         if who == "d":
             print(f"Dealer's new number is {new_c}.")
             y = 5
+            time.sleep(0.25)
             self.dealer_imgs.append(tramp_tk)
             x += len(self.dealer_imgs)*TRAMP_WIDTH/2
 
