@@ -11,6 +11,7 @@ class game(threading.Thread):
         self.tramp_kind = {1:"spade", 2: "clover", 3: "diamond", 4: "heart"}
         self.dealer_imgs = []
         self.player_imgs = []
+
         self.daemon = True
         self.alive = True
         self.game_start_event = threading.Event()
@@ -39,7 +40,6 @@ class game(threading.Thread):
             y = 400
             self.player_imgs.append(tramp_tk)
             x += len(self.player_imgs)*TRAMP_WIDTH/2
-
 
         self.field_canvas.create_image((TRAMP_WIDTH-PAD)/2, (TRAMP_HEIGHT-PAD)/2, image=tramp_tk)
         self.field_canvas.place(x=x, y=y)
@@ -77,6 +77,15 @@ class game(threading.Thread):
             self.disp_result(dealer, player, stop_flag=True)
             return False
 
+        if len(self.dealer_nums) == 2 or len(self.player_nums) == 2:
+            get_bj = self.check_bj()
+            if get_bj == "d":
+                self.disp_result(21, player, stop_flag=True)
+                return False
+            elif get_bj == "p":
+                self.disp_result(dealer, 21, stop_flag=True)
+                return False
+
         return True
 
     def disp_result(self, dealer, player, stop_flag=False):
@@ -90,8 +99,8 @@ class game(threading.Thread):
                 result = "Lose" if player > dealer else "Win"
         else:
             result = "Lose" if dealer >= player else "Win"
-        self.result_label = tk.Label(root, text=result+"!!", font=("Times", 40), fg="white", bg="black")
-        self.result_label.place(x=500, y=230)
+        self.result_label = tk.Label(root, text="Player "+result+"!!", font=("Times", 40), fg="white", bg="black")
+        self.result_label.place(x=330, y=270)
 
     def disp_total(self, dealer, player):
         self.dealer_label = tk.Label(root, text=dealer, font=("Times", 40), fg="white", bg="black")
@@ -102,18 +111,31 @@ class game(threading.Thread):
         self.dealer_label.place(x=x, y=self.dealer_y)
         self.player_label.place(x=x, y=self.player_y)
 
+    def check_bj(self):
+        if 1 in self.dealer_nums and 10 in self.dealer_nums:
+            return "d"
+        elif 1 in self.player_nums and 10 in self.player_nums:
+            return "p"
+
+        return ""
+
     def run(self):
         while True:
             print("Game Start...")
             self.game_start_event.wait()
             dealer = 0
             player = 0
+            self.dealer_imgs = []
+            self.player_imgs = []
+            self.dealer_nums = []
+            self.player_nums = []
             try_first = True
             while(True):
-                if dealer < 17:
-                    dealer += self.new_card(who="d")
-                player += self.new_card(who="p")
+                self.player_nums.append(self.new_card(who="p"))
+                player += self.player_nums[-1]
                 if try_first:
+                    self.dealer_nums.append(self.new_card(who="d"))
+                    dealer += self.dealer_nums[-1]
                     try_first = False
                     continue
 
@@ -126,7 +148,8 @@ class game(threading.Thread):
                 if self.choice == "s":
                     is_continue = True
                     while(dealer < player):
-                        dealer += self.new_card(who="d")
+                        self.dealer_nums.append(self.new_card(who="d"))
+                        dealer += self.dealer_nums[-1]
                         is_continue = self.check_num(dealer, player)
                         if not is_continue:
                             break
@@ -157,8 +180,6 @@ def choose_stand():
     game_thread.operation_event.clear()
 
 def next_game():
-    game_thread.dealer_imgs = []
-    game_thread.player_imgs = []
     draw_blackbox()
 
     game_thread.result_label.place_forget()
