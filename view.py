@@ -9,6 +9,4 @@ start_bt = tk.Button(text="START", width=50)
 start_bt.pack(side=tk.BOTTOM)
 root.configure(bg="green")
 
-
-
 root.mainloop()
