@@ -16,6 +16,7 @@ class game(threading.Thread):
         self.game_start_event = threading.Event()
         self.operation_event = threading.Event()
         self.next_game_event = threading.Event()
+        self.bust_result = tk.Label(root, text="Bust!", font=("Times", 40), fg="white", bg="black")
 
     def new_card(self, who=None):
         new_c = random.randint(1, 13)
@@ -57,18 +58,16 @@ class game(threading.Thread):
     def check_num(self, dealer, player):
         bust_x = 125
         ADD = 75
-        if dealer > 21:
-            print("Player win!")
-            self.bust_result = tk.Label(root, text="Bust!", font=("Times", 40), fg="white", bg="black")
-            bust_y = self.dealer_y + ADD
+        if player > 21:
+            print("Player lose!")
+            bust_y = self.player_y + ADD
             self.bust_result.place(x=bust_x, y=bust_y)
             self.disp_result(dealer, player, stop_flag=True)
 
             return False
-        elif player > 21:
-            print("Player lose!")
-            self.bust_result = tk.Label(root, text="Bust!", font=("Times", 40), fg="white", bg="black")
-            bust_y = self.player_y + ADD
+        elif dealer > 21:
+            print("Player win!")
+            bust_y = self.dealer_y + ADD
             self.bust_result.place(x=bust_x, y=bust_y)
             self.disp_result(dealer, player, stop_flag=True)
 
@@ -86,7 +85,7 @@ class game(threading.Thread):
             if player == 21:
                 result = "Win"
             elif dealer == 21:
-                result == "Lose"
+                result = "Lose"
             else:
                 result = "Lose" if player > dealer else "Win"
         else:
@@ -95,15 +94,13 @@ class game(threading.Thread):
         self.result_label.place(x=500, y=230)
 
     def disp_total(self, dealer, player):
-        dealer_label = tk.Label(root, text=dealer, font=("Times", 40), fg="white", bg="black")
-        player_label = tk.Label(root, text=player, font=("Times", 40), fg="white", bg="black")
+        self.dealer_label = tk.Label(root, text=dealer, font=("Times", 40), fg="white", bg="black")
+        self.player_label = tk.Label(root, text=player, font=("Times", 40), fg="white", bg="black")
         x = 150
         self.dealer_y = 5 + TRAMP_HEIGHT/2
         self.player_y = 400 + TRAMP_HEIGHT/2
-        dealer_label.place(x=x, y=self.dealer_y)
-        player_label.place(x=x, y=self.player_y)
-        print(dealer)
-        print(player)
+        self.dealer_label.place(x=x, y=self.dealer_y)
+        self.player_label.place(x=x, y=self.player_y)
 
     def run(self):
         while True:
@@ -121,19 +118,23 @@ class game(threading.Thread):
                     continue
 
                 self.disp_total(dealer, player)
-                is_continue = self.check_num(dealer, player)
-
-                if not is_continue:
+                if not self.check_num(dealer, player):
                     break
 
                 self.choice_action()
 
                 if self.choice == "s":
-                    while(dealer <= player):
+                    is_continue = True
+                    while(dealer < player):
                         dealer += self.new_card(who="d")
+                        is_continue = self.check_num(dealer, player)
+                        if not is_continue:
+                            break
                         print(f"Dealer's total number is {dealer}.")
 
-                    self.disp_result(dealer, player)
+                    if is_continue:
+                        self.disp_result(dealer, player)
+                    # print("Call disp_result?")
                     break
                 elif self.choice == "h":
                     continue
@@ -158,12 +159,20 @@ def choose_stand():
 def next_game():
     game_thread.dealer_imgs = []
     game_thread.player_imgs = []
+    draw_blackbox()
+
+    game_thread.result_label.place_forget()
+    game_thread.bust_result.place_forget()
     game_thread.field_canvas.delete("all")
     game_thread.game_start_event.set()
     game_thread.game_start_event.clear()
     switchButtonStateToAbled()
-    game_thread.result_label.place_forget()
-    game_thread.bust_result.place_forget()
+
+def draw_blackbox():
+    dealer_label = tk.Label(root, text="88", font=("Times", 40), fg="black", bg="black")
+    player_label = tk.Label(root, text="88", font=("Times", 40), fg="black", bg="black")
+    dealer_label.place(x=150, y=game_thread.dealer_y)
+    player_label.place(x=150, y=game_thread.player_y)
 
 def switchButtonStateToAbled():
     hit_bt.config(state=tk.NORMAL)
