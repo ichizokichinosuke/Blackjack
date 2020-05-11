@@ -31,14 +31,12 @@ class game(threading.Thread):
 
         x = 200
         if who == "d":
-            print(f"Dealer's new number is {new_c}.")
             y = 5
             time.sleep(0.25)
             self.dealer_imgs.append(tramp_tk)
             x += len(self.dealer_imgs)*TRAMP_WIDTH/2
 
         elif who == "p":
-            print(f"Player's new number is {new_c}.")
             y = 400
             self.player_imgs.append(tramp_tk)
             x += len(self.player_imgs)*TRAMP_WIDTH/2
@@ -52,23 +50,18 @@ class game(threading.Thread):
         return new_c
 
     def choice_action(self):
-        print("Stand?: s or Hit?: h")
-        print("Please enter s or h.")
-        print("Waiting click...")
         self.operation_event.wait()
 
     def check_num(self, dealer, player):
         bust_x = 125
         ADD = 75
         if player > 21:
-            print("Player lose!")
             bust_y = self.player_y + ADD
             self.bust_result.place(x=bust_x, y=bust_y)
             self.disp_result(dealer, player, stop_flag=True)
 
             return False
         elif dealer > 21:
-            print("Player win!")
             bust_y = self.dealer_y + ADD
             self.bust_result.place(x=bust_x, y=bust_y)
             self.disp_result(dealer, player, stop_flag=True)
@@ -123,7 +116,6 @@ class game(threading.Thread):
 
     def run(self):
         while True:
-            print("Game Start...")
             self.game_start_event.wait()
             dealer = 0
             player = 0
@@ -155,11 +147,10 @@ class game(threading.Thread):
                         is_continue = self.check_num(dealer, player)
                         if not is_continue:
                             break
-                        print(f"Dealer's total number is {dealer}.")
 
                     if is_continue:
                         self.disp_result(dealer, player)
-                    # print("Call disp_result?")
+
                     break
                 elif self.choice == "h":
                     continue
