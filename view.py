@@ -243,8 +243,6 @@ hit_bt.pack(anchor=tk.SW, side=tk.LEFT)
 stand_bt = ttk.Button(text="STAND", width=35, command=choose_stand)
 stand_bt.pack(anchor=tk.SW, side=tk.LEFT)
 
-<<<<<<< HEAD
-=======
 next_game_bt = ttk.Button(text="Next Game", width=35, command=next_game, state=tk.DISABLED)
 next_game_bt.pack(anchor=tk.SW, side=tk.LEFT)
 
@@ -259,5 +257,4 @@ for i in range(3):
     back_canvas.create_image((TRAMP_WIDTH-PAD)/2,(TRAMP_HEIGHT-PAD)/2,  image=tkimg)
 
 root.configure(bg="green")
->>>>>>> work
 root.mainloop()
