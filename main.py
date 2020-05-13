@@ -25,14 +25,14 @@ class game(threading.Thread):
         kind = self.tramp_kind[random.randint(1,4)]
         self.field_canvas = tk.Canvas(root, bg="green", width=TRAMP_WIDTH-PAD, height=TRAMP_HEIGHT-PAD, highlightthickness=0)
 
-        tramp_image = Image.open(f"../Tramp/{kind}_{new_c}.png")
+        tramp_image = Image.open(f"{TRAMP_PATH}/{kind}_{new_c}.png")
         tramp_image = image_resize(TRAMP_WIDTH, tramp_image)
         tramp_tk = ImageTk.PhotoImage(tramp_image)
 
         x = 200
         if who == "d":
             y = 5
-            time.sleep(0.25)
+            time.sleep(0.5)
             self.dealer_imgs.append(tramp_tk)
             x += len(self.dealer_imgs)*TRAMP_WIDTH/2
 
@@ -210,6 +210,7 @@ def image_resize(width, img):
 """
 Const values
 """
+TRAMP_PATH = "./Tramp_imgs"
 TRAMP_WIDTH = 140
 PAD = 3
 DIF = 20
@@ -237,7 +238,7 @@ stand_bt.pack(anchor=tk.SW, side=tk.LEFT)
 next_game_bt = ttk.Button(text="Next Game", width=35, command=next_game, state=tk.DISABLED)
 next_game_bt.pack(anchor=tk.SW, side=tk.LEFT)
 
-tramp_back = Image.open("../Tramp/others_2.png")
+tramp_back = Image.open(f"{TRAMP_PATH}/others_2.png")
 tramp_back = image_resize(TRAMP_WIDTH, tramp_back)
 TRAMP_HEIGHT = tramp_back.size[1]
 tkimg = ImageTk.PhotoImage(tramp_back)
