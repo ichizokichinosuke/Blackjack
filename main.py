@@ -72,12 +72,14 @@ class game(threading.Thread):
             self.disp_result(dealer, player, stop_flag=True)
             return False
 
-        if len(self.dealer_nums) == 2 or len(self.player_nums) == 2:
-            get_bj = self.check_bj()
+        if len(self.dealer_nums) == 2:
+            get_bj = self.check_bj(who="d")
             if get_bj == "d":
                 self.disp_result(21, player, stop_flag=True)
                 return False
-            elif get_bj == "p":
+        elif len(self.player_nums) == 2:
+            get_bj = self.check_bj(who="p")
+            if get_bj == "p":
                 self.disp_result(dealer, 21, stop_flag=True)
                 return False
 
@@ -106,13 +108,16 @@ class game(threading.Thread):
         self.dealer_label.place(x=x, y=self.dealer_y)
         self.player_label.place(x=x, y=self.player_y)
 
-    def check_bj(self):
-        if 1 in self.dealer_nums and 10 in self.dealer_nums:
-            return "d"
-        elif 1 in self.player_nums and 10 in self.player_nums:
-            return "p"
+    def check_bj(self, who=None):
+        if who == "d":
+            if 1 in self.dealer_nums and 10 in self.dealer_nums:
+                return True
+        elif who == "p":
+            if 1 in self.player_nums and 10 in self.player_nums:
+                return True
 
-        return ""
+        else:
+            return False
 
     def run(self):
         while True:
@@ -210,7 +215,7 @@ def image_resize(width, img):
 """
 Const values
 """
-TRAMP_PATH = "./Tramp_imgs"
+TRAMP_PATH = "../Tramp"
 TRAMP_WIDTH = 140
 PAD = 3
 DIF = 20
